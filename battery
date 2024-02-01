@@ -1,0 +1,24 @@
+#!/bin/bash
+
+while true  
+do  
+	upower -i /org/freedesktop/UPower/devices/battery_BAT1 | grep "percentage:" > temp1
+	upower -i /org/freedesktop/UPower/devices/battery_BAT1 | grep "state:" > temp2
+	percent=`awk '{print $2}' temp1`
+	state=`awk '{print $2}' temp2`
+	short=${percent:0:2}
+
+	if [ $short -gt 95 ] && [ $state == 'charging' ]
+	then
+        	notify-send -u critical "Unplug!" "Battery is at $percent."
+	fi
+
+	if [ $short -lt 25 ] && [ $state != 'charging' ]
+	then
+		notify-send -u critical "Charge!" "Battery is at $percent."
+	fi
+
+	echo "Battery percentage: $percent"	
+
+	sleep 500  
+done
